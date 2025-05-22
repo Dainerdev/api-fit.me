@@ -1,4 +1,5 @@
 import {getConnection} from '../db/db.config.js';
+const bcrypt = require('bcrypt');
 
 // Function to get all users
 const getUsers = async (req, res) => {
@@ -30,18 +31,45 @@ const getUserById = async (req, res) => {
     }
 }
 
+// Function to get a user by email
+const login = async (req, res) => {
+    const { email, password } = req.body;
+
+    const user = await getUserByEmail(email);
+    try {
+        const connection = await getConnection();
+        const rows = await connection.query('SELECT (email, password) FROM users WHERE email = ?', [email]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json(rows[0]);
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
 // Function to create a new user
 const createUser = async (req, res) => {
-    const { name, last_name, email, password, birth_date, gender, initial_weight, height, goal, activity_level, note } = req.body;
+    
     try {
+
+        const { name, last_name, email, password, birth_date, gender, initial_weight, height, goal, activity_level, note } = req.body;
 
         // Validate required fields
         if (!name || !last_name || !email || !password || !birth_date || !gender || !initial_weight || !height || !goal || !activity_level) {
             return res.status(400).json({ message: 'Name, last name, email, password, birth_date, gender, initial_weight, height, goal, and activity_level are required' });
         }
 
-        const connection = await getConnection();
-        const user = { name, last_name, email, password, birth_date, gender, initial_weight, height, goal, activity_level, note };
+        // Hash the password
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        const user = { name, last_name, email, password: hashedPassword, birth_date, gender, initial_weight, height, goal, activity_level, note };
+        
+        const connection = await getConnection();        
         const result = await connection.query('INSERT INTO users SET ?', user);
         res.status(201).json({ id: result.insertId, ...user });
     } catch (error) {
@@ -102,6 +130,7 @@ const deleteUser = async (req, res) => {
 export const methods = {
     getUsers,
     getUserById,
+    login,
     createUser,
     updateUser,
     deleteUser
