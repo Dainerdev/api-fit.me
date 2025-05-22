@@ -31,20 +31,25 @@ const getUserById = async (req, res) => {
     }
 }
 
-// Function to get a user by email
+// Function to login a user
 const login = async (req, res) => {
     const { email, password } = req.body;
 
-    const user = await getUserByEmail(email);
     try {
+
         const connection = await getConnection();
-        const rows = await connection.query('SELECT (email, password) FROM users WHERE email = ?', [email]);
+        const rows = await connection.query('SELECT * FROM users WHERE email = ?', [email]);
 
         if (rows.length === 0) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        res.status(200).json(rows[0]);
+        const userValid = await bcrypt.compare(password, rows[0].password);
+        if (!userValid) {
+            return res.status(401).json({ message: 'Invalid password' });
+        }
+
+        res.status(200).json({ message: 'Login successful'});
     } catch (error) {
         console.error('Error fetching user:', error);
         res.status(500).json({ message: 'Internal server error' });
@@ -68,7 +73,7 @@ const createUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         const user = { name, last_name, email, password: hashedPassword, birth_date, gender, initial_weight, height, goal, activity_level, note };
-        
+
         const connection = await getConnection();        
         const result = await connection.query('INSERT INTO users SET ?', user);
         res.status(201).json({ id: result.insertId, ...user });
