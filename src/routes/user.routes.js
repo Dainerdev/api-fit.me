@@ -10,6 +10,7 @@ router.get("/:id", userController.getUserById);
 
 // Post route
 router.post("/", userController.createUser);
+router.post("/login", userController.login);
 
 // Put route
 router.put("/:id", userController.updateUser);
