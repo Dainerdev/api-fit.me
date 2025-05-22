@@ -1,0 +1,34 @@
+{
+  "name": "api-fit.me",
+  "version": "1.0.0",
+  "description": "API for Fit.Me project",
+  "main": "index.js",
+  "scripts": {
+    "babel-node": "babel-node --presets=@babel/preset-env",
+    "dev": "nodemon --exec npm run babel-node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dainerdev/api-fit.me.git"
+  },
+  "author": "Dainerdev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dainerdev/api-fit.me/issues"
+  },
+  "homepage": "https://github.com/Dainerdev/api-fit.me#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "promise-mysql": "^5.2.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.27.2",
+    "@babel/core": "^7.27.1",
+    "@babel/node": "^7.27.1",
+    "@babel/preset-env": "^7.27.2",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.10"
+  }
+}
