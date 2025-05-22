@@ -4,7 +4,7 @@ import {getConnection} from '../db/db.config.js';
 const getUsers = async (req, res) => {
     try {
         const connection = await getConnection();
-        const [rows] = await connection.query('SELECT * FROM users');
+        const rows = await connection.query('SELECT * FROM users');
         res.status(200).json(rows);
     } catch (error) {
         console.error('Error fetching users:', error);
@@ -17,7 +17,7 @@ const getUserById = async (req, res) => {
     const { id } = req.params;
     try {
         const connection = await getConnection();
-        const [rows] = await connection.query('SELECT * FROM users WHERE id = ?', [id]);
+        const rows = await connection.query('SELECT * FROM users WHERE id = ?', [id]);
 
         if (rows.length === 0) {
             return res.status(404).json({ message: 'User not found' });
@@ -62,7 +62,7 @@ const updateUser = async (req, res) => {
         }
 
         const connection = await getConnection();
-        const [rows] = await connection.query('SELECT * FROM users WHERE id = ?', [id]);
+        const rows = await connection.query('SELECT * FROM users WHERE id = ?', [id]);
 
         // Check if user exists
         if (rows.length === 0) {
@@ -83,7 +83,7 @@ const deleteUser = async (req, res) => {
     const { id } = req.params;
     try {
         const connection = await getConnection();
-        const [rows] = await connection.query('SELECT * FROM users WHERE id = ?', [id]);
+        const rows = await connection.query('SELECT * FROM users WHERE id = ?', [id]);
 
         // Check if user exists
         if (rows.length === 0) {
